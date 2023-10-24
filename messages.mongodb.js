@@ -8,25 +8,21 @@ use('messages')
 //   { message: 'бла, бла, бла' }
 // ])
 
+
 db.messages.aggregate([
-  { $unwind: '$message' },
+  { $project: { words: { $split: ['$message', ' '] } } },
+  { $unwind: '$words' },
   {
     $match: {
-      message: { $regex: 'паровоз', $options: 'i' }
+      words: { $regex: 'паровоз' }
     }
   },
-  { $group: { _id: '$message', count: { $sum: +1 } } },
-  { $project: { count: '$count' } }
+  { $group: { _id: '$words', countWords: { $push: '$words' } } },
+  {
+    $project: {
+      wordCount: { $size: '$countWords' }
+    }
+  }
 ])
-
-// db.messages.aggregate([
-//   { $unwind: '$message' },
-//   {
-//     $match: {
-//       message: { $regex: 'паровоз', $options: 'i' }
-//     }
-//   },
-//   {$count: "count_words"}
-// ])
 
 // db.messages.drop()
