@@ -8,13 +8,12 @@ use('messages')
 //   { message: 'бла, бла, бла' }
 // ])
 
-
 db.messages.aggregate([
   { $project: { words: { $split: ['$message', ' '] } } },
   { $unwind: '$words' },
   {
     $match: {
-      words: { $regex: 'паровоз' }
+      words: { $regex: /паровоз/, $options: 'i' }
     }
   },
   { $group: { _id: '$words', countWords: { $push: '$words' } } },
